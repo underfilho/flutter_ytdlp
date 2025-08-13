@@ -28,11 +28,6 @@ class MainActivity: FlutterActivity() {
                     val videoPath = service.downloadVideo(url!!)
                     result.success(videoPath)
                 }
-                "convertToMp3" -> {
-                    val path = call.argument<String>("path")
-                    val newPath = service.convertToMp3(path!!)
-                    result.success(newPath)
-                }
             }
         }
     }
