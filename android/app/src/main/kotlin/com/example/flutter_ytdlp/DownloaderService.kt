@@ -24,4 +24,9 @@ class DownloaderService {
         val result = pyObj.callAttr("download_video", url)
         return result.toString()
     }
+
+    fun downloadVideo(url: String): String {
+        val result = pyObj.callAttr("download_audio", url)
+        return result.toString()
+    }
 }

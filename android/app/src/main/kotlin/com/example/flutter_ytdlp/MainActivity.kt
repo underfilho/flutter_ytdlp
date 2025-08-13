@@ -28,6 +28,11 @@ class MainActivity: FlutterActivity() {
                     val videoPath = service.downloadVideo(url!!)
                     result.success(videoPath)
                 }
+                "downloadAudio" -> {
+                    val url = call.argument<String>("url")
+                    val videoPath = service.downloadAudio(url!!)
+                    result.success(videoPath)
+                }
             }
         }
     }

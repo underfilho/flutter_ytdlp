@@ -13,7 +13,7 @@ def download_video(url):
 
     return output_path
 
-def download_video(url):
+def download_audio(url):
     ydl_opts = {
         "outtmpl": "/storage/emulated/0/Download/%(title)s.%(ext)s",
         "format": "bestaudio/best",
