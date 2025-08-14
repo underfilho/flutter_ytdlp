@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ytdlp/app/downloader_service.dart';
+import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 
-import 'app/home.dart';
+import 'app/ui/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
