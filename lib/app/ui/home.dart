@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 import 'package:flutter_ytdlp/app/ui/colors.dart';
+import 'package:flutter_ytdlp/app/ui/widgets/app_button.dart';
+import 'package:flutter_ytdlp/app/ui/widgets/video_info.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  var isLoading = false;
+  final controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +27,7 @@ class Home extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
+                  controller: controller,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: AppColors.containerColor,
@@ -32,46 +44,7 @@ class Home extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.secondaryTextColor,
-                      ),
-                      width: 85,
-                      height: 85,
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Título do vídeo",
-                          style: TextStyle(color: AppColors.primaryTextColor),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            "2:30",
-                            style: TextStyle(color: AppColors.primaryTextColor),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
+                VideoInfo(),
                 SizedBox(
                   height: 30,
                 ),
@@ -83,25 +56,17 @@ class Home extends StatelessWidget {
                       child: SizedBox(),
                     ),
                     Expanded(
-                      flex: 1,
-                      child: InkWell(
-                        onTap: () {},
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: AppColors.primaryColor,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Baixar vídeo',
-                              style:
-                                  TextStyle(color: AppColors.primaryTextColor),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                        flex: 1,
+                        child: AppButton(
+                          text: isLoading ? 'Baixando...' : 'Baixar vídeo',
+                          onTap: () {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            // DownloaderService.instance
+                            //     .downloadVideo(controller.text);
+                          },
+                        )),
                   ],
                 ),
               ],
