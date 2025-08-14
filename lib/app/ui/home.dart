@@ -63,8 +63,13 @@ class _HomeState extends State<Home> {
                             setState(() {
                               isLoading = true;
                             });
-                            // DownloaderService.instance
-                            //     .downloadVideo(controller.text);
+                            DownloaderService.instance
+                                .downloadVideo(controller.text)
+                                .then((_) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            });
                           },
                         )),
                   ],
