@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_ytdlp/app/models/video_info.dart';
 
 class DownloaderService {
   static final instance = DownloaderService._();
@@ -13,9 +14,10 @@ class DownloaderService {
     return this;
   }
 
-  Future<Map<String, dynamic>?> getVideoInfo(String url) async {
+  Future<VideoInfo> getVideoInfo(String url) async {
     var result = await _channel.invokeMethod('getVideoInfo', {'url': url});
-    return jsonDecode(result);
+    final json = jsonDecode(result);
+    return VideoInfo.fromJson(json);
   }
 
   Future<String> downloadVideo(String url) async {

@@ -35,9 +35,6 @@ def get_video_info(url):
             map = {
                 "title": info.get("title"),
                 "duration": info.get("duration"),
-                "upload_date": info.get("upload_date"),
-                "uploader": info.get("uploader"),
-                "description": info.get("description"),
                 "thumbnail": info.get("thumbnail"),
             }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ytdlp/app/models/video_info.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
+import 'package:flutter_ytdlp/app/ui/widgets/video_info_card.dart';
 
 import 'app/ui/home.dart';
 

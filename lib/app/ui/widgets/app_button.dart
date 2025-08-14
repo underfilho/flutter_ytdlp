@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 import 'package:flutter_ytdlp/app/ui/colors.dart';
 
 class AppButton extends StatelessWidget {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ytdlp/app/models/video_info.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 import 'package:flutter_ytdlp/app/ui/colors.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/app_button.dart';
-import 'package:flutter_ytdlp/app/ui/widgets/video_info.dart';
+import 'package:flutter_ytdlp/app/ui/widgets/video_info_card.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,8 +13,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var isLoading = false;
   final controller = TextEditingController();
+  var isDownloading = false;
+  VideoInfo? videoInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,13 @@ class _HomeState extends State<Home> {
                     hintText: "Enter your link",
                     hintStyle: TextStyle(color: AppColors.secondaryTextColor),
                   ),
+                  onSubmitted: (url) async {
+                    final info =
+                        await DownloaderService.instance.getVideoInfo(url);
+                    setState(() {
+                      videoInfo = info;
+                    });
+                  },
                   style: TextStyle(
                     color: AppColors.primaryTextColor,
                   ),
@@ -44,36 +53,36 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: 20,
                 ),
-                VideoInfo(),
+                if (videoInfo != null) VideoInfoCard(info: videoInfo!),
                 SizedBox(
                   height: 30,
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: SizedBox(),
-                    ),
-                    Expanded(
+                if (videoInfo != null)
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: SizedBox(),
+                      ),
+                      Expanded(
                         flex: 1,
                         child: AppButton(
-                          text: isLoading ? 'Baixando...' : 'Baixar vídeo',
-                          onTap: () {
+                          text: isDownloading ? 'Baixando...' : 'Baixar vídeo',
+                          onTap: () async {
                             setState(() {
-                              isLoading = true;
+                              isDownloading = true;
                             });
-                            DownloaderService.instance
-                                .downloadVideo(controller.text)
-                                .then((_) {
-                              setState(() {
-                                isLoading = false;
-                              });
+                            await DownloaderService.instance
+                                .downloadVideo(controller.text);
+                            setState(() {
+                              isDownloading = false;
                             });
                           },
-                        )),
-                  ],
-                ),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
