@@ -18,17 +18,18 @@ class DownloaderService {
     return jsonDecode(result);
   }
 
-  Future<String> downloadVideo(String url, {bool mp3 = false}) async {
+  Future<String> downloadVideo(String url) async {
     var result = await _channel.invokeMethod<String>('download', {'url': url});
     if (result == null) throw Exception();
 
-    if (mp3) result = await convertToMp3(result);
     return result;
   }
 
-  Future<String> convertToMp3(String videoPath) async {
-    final result =
-        await _channel.invokeMethod('convertToMp3', {'path': videoPath});
+  Future<String> downloadAudio(String url) async {
+    var result =
+        await _channel.invokeMethod<String>('downloadAudio', {'url': url});
+    if (result == null) throw Exception();
+
     return result;
   }
 }

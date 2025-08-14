@@ -1,7 +1,6 @@
 package com.ander.yt_dlp
 
 import android.content.Context
-import com.arthenica.ffmpegkit.FFmpegKit
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
@@ -26,8 +25,8 @@ class DownloaderService {
         return result.toString()
     }
 
-    fun convertToMp3(path: String) {
-        val command = "-i \"$path\" -vn -ar 44100 -ac 2 -b:a 192k \"${path.replace(".mp4", ".mp3")}\""
-        FFmpegKit.execute(command)
+    fun downloadAudio(url: String): String {
+        val result = pyObj.callAttr("download_audio", url)
+        return result.toString()
     }
 }
