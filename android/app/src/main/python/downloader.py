@@ -1,5 +1,6 @@
 import yt_dlp
 import json
+import os
 
 def download_video(url):
     ydl_opts = {
@@ -16,12 +17,18 @@ def download_video(url):
 def download_audio(url):
     ydl_opts = {
         "outtmpl": "/storage/emulated/0/Download/%(title)s.%(ext)s",
-        "format": "bestaudio/best",
+        "format": "m4a/bestaudio/best",
         "noplaylist": True
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
         output_path = ydl.prepare_filename(info)
+
+    base, ext = os.path.splitext(output_path)
+    if ext == ".mp4":
+        new_path = base + ".m4a"
+        os.rename(output_path, new_path)
+        return new_path
 
     return output_path
 

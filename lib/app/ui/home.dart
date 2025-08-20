@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
                               isDownloading = true;
                             });
                             await DownloaderService.instance
-                                .downloadVideo(controller.text);
+                                .downloadAudio(controller.text);
                             setState(() {
                               isDownloading = false;
                             });
