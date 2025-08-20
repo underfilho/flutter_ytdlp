@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ytdlp/app/ui/colors.dart';
+import 'package:flutter_ytdlp/app/ui/styles/colors.dart';
 
 const _thumbSize = 18.0;
 const _padSize = 4.0;

@@ -43,6 +43,7 @@ def get_video_info(url):
                 "title": info.get("title"),
                 "duration": info.get("duration"),
                 "thumbnail": info.get("thumbnail"),
+                "url": info.get("webpage_url"),
             }
 
         return json.dumps(map)

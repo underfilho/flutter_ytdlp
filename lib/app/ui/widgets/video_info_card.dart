@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ytdlp/app/models/video_info.dart';
-import 'package:flutter_ytdlp/app/ui/colors.dart';
+import 'package:flutter_ytdlp/app/ui/styles/colors.dart';
 
 class VideoInfoCard extends StatelessWidget {
   final VideoInfo info;

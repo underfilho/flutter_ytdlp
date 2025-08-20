@@ -4,9 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_ytdlp/app/models/video_info.dart';
 
 class DownloaderService {
-  static final instance = DownloaderService._();
-  DownloaderService._();
-
   final _channel = MethodChannel('dlp_downloader');
 
   Future<DownloaderService> init() async {
