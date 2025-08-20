@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ytdlp/app/core/base/alerts.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/home_store.dart';
 import 'package:flutter_ytdlp/app/ui/styles/colors.dart';
