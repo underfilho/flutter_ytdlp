@@ -9,7 +9,7 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 40,
@@ -20,7 +20,8 @@ class AppButton extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: TextStyle(color: AppColors.primaryTextColor),
+            style: TextStyle(
+                color: AppColors.primaryTextColor, fontWeight: FontWeight.bold),
           ),
         ),
       ),

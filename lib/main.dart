@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app/ui/home.dart';
 
@@ -16,6 +17,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)),
       home: Home(),
     );
   }

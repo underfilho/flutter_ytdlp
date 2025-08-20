@@ -13,4 +13,12 @@ class VideoInfo {
       thumbnailUrl: json['thumbnail'],
     );
   }
+
+  String get formattedDuration {
+    final minutes = seconds ~/ 60;
+    final secs = seconds % 60;
+    final minutesStr = minutes.toString().padLeft(2, '0');
+    final secondsStr = secs.toString().padLeft(2, '0');
+    return '$minutesStr:$secondsStr';
+  }
 }

@@ -12,13 +12,13 @@ class VideoInfoCard extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: AppColors.secondaryTextColor,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.network(
+            info.thumbnailUrl,
+            height: 85,
+            fit: BoxFit.cover,
           ),
-          width: 85,
-          height: 85,
         ),
         SizedBox(
           width: 20,
@@ -30,19 +30,22 @@ class VideoInfoCard extends StatelessWidget {
               Text(
                 info.title,
                 style: TextStyle(color: AppColors.primaryTextColor),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(
                 height: 5,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: AppColors.primaryColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '${info.seconds.toString()}sec',
-                  style: TextStyle(color: AppColors.primaryTextColor),
+                  info.formattedDuration,
+                  style: TextStyle(
+                      color: AppColors.primaryTextColor, fontSize: 10),
                 ),
               ),
             ],
