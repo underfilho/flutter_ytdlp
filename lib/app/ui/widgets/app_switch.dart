@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ytdlp/app/ui/colors.dart';
 
-const _thumbSize = 20.0;
+const _thumbSize = 18.0;
 const _padSize = 4.0;
 
 class AppSwitch extends StatelessWidget {

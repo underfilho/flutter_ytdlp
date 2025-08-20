@@ -6,4 +6,5 @@ class AppColors {
   static final Color primaryColor = Color(0xff266EFF);
   static final Color primaryTextColor = Color(0xffFBFBFB);
   static final Color secondaryTextColor = Color(0xff5A5A5B);
+  static final Color disabledColor = Color(0xff181919);
 }

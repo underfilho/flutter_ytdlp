@@ -93,24 +93,25 @@ class _HomeState extends State<Home> {
           SizedBox(height: 30),
           AppSwitch(
             onChanged: (_) {
-              if (downloadVideo) return;
+              downloadVideo = false;
               setState(() => downloadAudio = !downloadAudio);
             },
             enabled: downloadAudio,
             label: 'Áudio',
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 18),
           AppSwitch(
             onChanged: (_) {
-              if (downloadAudio) return;
+              downloadAudio = false;
               setState(() => downloadVideo = !downloadVideo);
             },
             enabled: downloadVideo,
             label: 'Vídeo',
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 18),
           _AlignToRight(
             child: AppButton(
+              disabled: !downloadAudio && !downloadVideo,
               text: isDownloading ? 'Baixando...' : 'Iniciar Download',
               onTap: () async {
                 setState(() => isDownloading = true);
