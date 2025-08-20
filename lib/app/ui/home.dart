@@ -141,12 +141,6 @@ class _HomeState extends State<Home> {
         ),
       );
 
-    if (videoInfo == null)
-      return Icon(
-        Icons.search,
-        color: AppColors.primaryColor,
-      );
-
     return null;
   }
 
