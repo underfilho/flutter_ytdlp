@@ -89,10 +89,10 @@ class _HomeState extends State<_HomePage> {
   void alertHandler(Alert alert) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       alert.action(() {
-        if (alert is MediaNotFoundAlert && !alert.consumed)
+        if (alert is MediaNotFoundAlert)
           return showSnackbar(
               context, 'Não foi encontrado vídeo correspondente.');
-        if (alert is CouldntDownloadAlert && !alert.consumed)
+        if (alert is CouldntDownloadAlert)
           return showSnackbar(context, 'Não foi possível realizar o download.');
       });
     });
