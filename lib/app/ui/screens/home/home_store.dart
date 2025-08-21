@@ -1,29 +1,41 @@
+import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_ytdlp/app/core/base/async_response.dart';
 import 'package:flutter_ytdlp/app/core/base/base_store.dart';
+import 'package:flutter_ytdlp/app/core/base/failures.dart';
 import 'package:flutter_ytdlp/app/core/utils/utils.dart';
 import 'package:flutter_ytdlp/app/models/video_info.dart';
 import 'package:flutter_ytdlp/app/services/debouncer.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
-import 'package:flutter_ytdlp/app/ui/screens/home/alerts/hide_keyboard_alert.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/alerts/couldnt_download_alert.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/alerts/media_not_found_alert.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/home_state.dart';
+import 'package:open_filex/open_filex.dart';
 
 class HomeStore extends BaseStore<HomeState> {
   final DownloaderService _service;
-  final _debouncer = Debouncer<VideoInfo>(milliseconds: 300);
-
   HomeStore(this._service) : super(HomeState.initial());
+
+  final _debouncer = Debouncer<VideoInfo>(milliseconds: 300);
+  late final FocusNode urlFocus;
 
   void onFieldChanged(String url) {
     if (url.isEmpty) return _reset();
     if (!isValidUrl(url)) return;
 
     _debouncer.run(
-      () {
+      () async {
         emit(state.searching());
-        return _service.getVideoInfo(url);
+        final response = await _service.getVideoInfo(url);
+        if (response.isRight()) return response.value;
+
+        _reset();
+        emit(state.alertUser(MediaNotFoundAlert()));
+        return null;
       },
       (info) {
+        urlFocus.unfocus();
         emit(state.videoFound(info));
-        emit(state.alertUser(HideKeyboardAlert()));
       },
     );
   }
@@ -31,17 +43,32 @@ class HomeStore extends BaseStore<HomeState> {
   void download() async {
     emit(state.downloading());
 
-    await Future.wait([
-      if (state.downloadAudio) _service.downloadAudio(state.info!.url),
-      if (state.downloadVideo) _service.downloadVideo(state.info!.url),
-    ]);
+    late final Either<Failure, String> response;
+
+    if (state.downloadAudio)
+      response = await _service.downloadAudio(state.info!.url);
+    if (state.downloadVideo)
+      response = await _service.downloadVideo(state.info!.url);
 
     emit(state.done());
+
+    if (response.isLeft()) return emit(state.alertUser(CouldntDownloadAlert()));
+
     _reset();
+    OpenFilex.open(response.value);
   }
 
-  void toggleDownloadAudio() => emit(state.toggleAudio());
-  void toggleDownloadVideo() => emit(state.toggleVideo());
+  void toggleDownloadAudio() {
+    final downloadAudio = !state.downloadAudio;
+    final downloadVideo = downloadAudio ? false : state.downloadVideo;
+    emit(state.toggleSwitch(downloadAudio, downloadVideo));
+  }
+
+  void toggleDownloadVideo() {
+    final downloadVideo = !state.downloadVideo;
+    final downloadAudio = downloadVideo ? false : state.downloadAudio;
+    emit(state.toggleSwitch(downloadAudio, downloadVideo));
+  }
 
   void _reset() => emit(HomeState.initial());
 }

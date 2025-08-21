@@ -16,3 +16,7 @@ extension GenericEitherUtils<L, R> on Either<L, R> {
   L get left => _leftNullable!;
   L? get _leftNullable => fold((l) => l, (r) => null);
 }
+
+extension OptionUtils on Option<Failure> {
+  Failure get failure => fold(() => null, (f) => f)!;
+}

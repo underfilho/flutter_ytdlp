@@ -1,3 +1,11 @@
-abstract class Alert {}
+abstract class Alert {
+  bool consumed = false;
 
-class HideKeyboardAlert implements Alert {}
+  action(Function() callback) {
+    if (consumed) return;
+    consumed = true;
+    return callback();
+  }
+}
+
+class HideKeyboardAlert extends Alert {}

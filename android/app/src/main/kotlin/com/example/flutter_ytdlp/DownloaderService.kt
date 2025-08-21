@@ -1,4 +1,4 @@
-package com.ander.yt_dlp
+package com.ander.puredownloader
 
 import android.content.Context
 import com.chaquo.python.PyObject

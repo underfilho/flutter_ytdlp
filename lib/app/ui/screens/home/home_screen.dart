@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ytdlp/app/core/base/alerts.dart';
+import 'package:flutter_ytdlp/app/core/utils/utils.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/alerts/couldnt_download_alert.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/alerts/media_not_found_alert.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/home_store.dart';
 import 'package:flutter_ytdlp/app/ui/styles/colors.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/animated_entry.dart';
@@ -31,7 +35,13 @@ class _HomePage extends StatefulWidget {
 
 class _HomeState extends State<_HomePage> {
   final controller = TextEditingController();
-  final urlNode = FocusNode();
+  final urlFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    store.urlFocus = urlFocus;
+  }
 
   HomeStore get store => context.read<HomeStore>();
 
@@ -47,13 +57,14 @@ class _HomeState extends State<_HomePage> {
               valueListenable: store.notifier,
               builder: (context, state, _) {
                 if (state.isInitial) controller.text = '';
+                if (state.alert != null) alertHandler(state.alert!);
 
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     InputText(
                       controller: controller,
-                      focusNode: urlNode,
+                      focusNode: urlFocus,
                       hint: 'Insira o link do vídeo',
                       rightIcon: urlFieldIcon,
                       onChanged: store.onFieldChanged,
@@ -73,6 +84,18 @@ class _HomeState extends State<_HomePage> {
         ),
       ),
     );
+  }
+
+  void alertHandler(Alert alert) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      alert.action(() {
+        if (alert is MediaNotFoundAlert && !alert.consumed)
+          return showSnackbar(
+              context, 'Não foi encontrado vídeo correspondente.');
+        if (alert is CouldntDownloadAlert && !alert.consumed)
+          return showSnackbar(context, 'Não foi possível realizar o download.');
+      });
+    });
   }
 
   Widget buildVideoContent() {

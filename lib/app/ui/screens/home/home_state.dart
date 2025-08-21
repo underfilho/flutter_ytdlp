@@ -32,9 +32,10 @@ class HomeState extends Equatable {
   HomeState videoFound(VideoInfo info) =>
       _copyWith(status: HomeStatus.found, info: info);
 
-  HomeState toggleAudio() => _copyWith(downloadAudio: !downloadAudio);
-
-  HomeState toggleVideo() => _copyWith(downloadVideo: !downloadVideo);
+  HomeState toggleSwitch(bool downloadAudio, bool downloadVideo) {
+    return _copyWith(
+        downloadAudio: downloadAudio, downloadVideo: downloadVideo);
+  }
 
   HomeState downloading() => _copyWith(status: HomeStatus.downloading);
 

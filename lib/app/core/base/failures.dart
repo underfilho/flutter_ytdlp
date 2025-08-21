@@ -1,17 +1,11 @@
-abstract class Failure {}
+import 'package:flutter_ytdlp/app/core/base/alerts.dart';
 
-class UnknownFailure implements Failure {}
+abstract class Failure extends Alert {}
 
-class NotFoundFailure implements Failure {}
+class UnknownFailure extends Failure {}
 
-class ConnectionFailure implements Failure {}
+class NotFoundFailure extends Failure {}
 
-class TimeoutFailure implements Failure {}
+class ConnectionFailure extends Failure {}
 
-class HttpFailure implements Failure {
-  final int code;
-
-  const HttpFailure(this.code);
-}
-
-class UserNotLogged implements Failure {}
+class TimeoutFailure extends Failure {}

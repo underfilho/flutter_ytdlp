@@ -7,12 +7,14 @@ class Debouncer<T> {
 
   Debouncer({required this.milliseconds});
 
-  void run(Future<T> Function() action, [void Function(T result)? onResult]) {
+  void run(Future<T?> Function() action, [void Function(T result)? onResult]) {
     _timer?.cancel();
     _timer = Timer(Duration(milliseconds: milliseconds), () async {
       final callId = ++_requestId;
       final result = await action();
-      if (callId == _requestId && onResult != null) onResult(result);
+
+      if (callId == _requestId && onResult != null && result != null)
+        onResult(result);
     });
   }
 

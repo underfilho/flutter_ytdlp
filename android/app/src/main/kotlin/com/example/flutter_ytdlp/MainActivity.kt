@@ -1,8 +1,8 @@
-package com.example.flutter_ytdlp
+package com.ander.puredownloader
 
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import com.ander.yt_dlp.DownloaderService
+import com.ander.puredownloader.DownloaderService
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
