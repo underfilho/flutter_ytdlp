@@ -1,6 +1,6 @@
 # PureDownloader
 
-PureDownloader é um aplicativo leve e rápido que permite baixar vídeos e áudios de sites como youtube, twitter, entre outros, diretamente no seu dispositivo. Ele funciona como um wrapper para o [yt-dlp](https://github.com/yt-dlp/yt-dlp), oferecendo toda a potência dessa ferramenta, mas com a conveniência de rodar localmente, sem depender de servidores externos.
+PureDownloader é um aplicativo leve, rápido e sem anúncios que permite baixar vídeos e áudios de sites como youtube, twitter, entre outros, diretamente do seu dispositivo. Ele funciona como um wrapper para o [yt-dlp](https://github.com/yt-dlp/yt-dlp), oferecendo toda a potência dessa ferramenta, mas com a conveniência de rodar localmente, sem depender de servidores externos.
 
 ## Funcionamento
 
