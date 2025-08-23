@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_ytdlp/app/core/base/alerts.dart';
 import 'package:flutter_ytdlp/app/models/video_info.dart';
 
-enum HomeStatus { initial, searching, found, downloading, done }
+enum HomeStatus { initial, searching, found }
 
 class HomeState extends Equatable {
   final VideoInfo? info;
@@ -21,7 +21,6 @@ class HomeState extends Equatable {
 
   bool get isInitial => status == HomeStatus.initial;
   bool get isSearching => status == HomeStatus.searching;
-  bool get isDownloading => status == HomeStatus.downloading;
 
   const HomeState.initial() : this._(status: HomeStatus.initial);
 
@@ -36,11 +35,6 @@ class HomeState extends Equatable {
     return _copyWith(
         downloadAudio: downloadAudio, downloadVideo: downloadVideo);
   }
-
-  HomeState downloading() => _copyWith(status: HomeStatus.downloading);
-
-  HomeState done([Alert? successAlert]) =>
-      _copyWith(status: HomeStatus.done, alert: successAlert);
 
   HomeState _copyWith({
     VideoInfo? info,

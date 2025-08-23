@@ -10,6 +10,6 @@
 📌 Implement new changes  
 📌 Create download progress  
 🔧 Open youtube links in app   
-🔧 Send download progress notifications
+🔧 Send download progress notifications  
 
 🛠️ Downloaded file not opening

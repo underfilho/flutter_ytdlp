@@ -4,6 +4,7 @@ import android.content.Context
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import io.flutter.plugin.common.EventChannel
 
 class DownloaderService {
     private lateinit var pyObj: PyObject
@@ -20,13 +21,22 @@ class DownloaderService {
         return result.toString()
     }
 
-    fun downloadVideo(url: String): String {
-        val result = pyObj.callAttr("download_video", url)
-        return result.toString()
-    }
+    fun download(
+        url: String,
+        onlyAudio: Boolean = false,
+        progressSink: EventChannel.EventSink
+    ) {
+        var outputPath = ""
+        val progressCallback = PyObject.fromJava { progress: String ->
+            progressSink.success(progress)
+        }
 
-    fun downloadAudio(url: String): String {
-        val result = pyObj.callAttr("download_audio", url)
-        return result.toString()
+        try {
+            outputPath = pyObj.callAttr("download", url, onlyAudio, progressCallback).toString()
+            progressSink.success(outputPath)
+            progressSink.endOfStream()
+        } catch (e: Exception) {
+            progressSink.error("DOWNLOAD_ERROR", e.message, null)
+        }
     }
 }

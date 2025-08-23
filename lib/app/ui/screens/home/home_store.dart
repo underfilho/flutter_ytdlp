@@ -1,16 +1,12 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ytdlp/app/core/base/async_response.dart';
 import 'package:flutter_ytdlp/app/core/base/base_store.dart';
-import 'package:flutter_ytdlp/app/core/base/failures.dart';
 import 'package:flutter_ytdlp/app/core/utils/utils.dart';
 import 'package:flutter_ytdlp/app/models/video_info.dart';
 import 'package:flutter_ytdlp/app/services/debouncer.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
-import 'package:flutter_ytdlp/app/ui/screens/home/alerts/couldnt_download_alert.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/alerts/media_not_found_alert.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/home_state.dart';
-import 'package:open_filex/open_filex.dart';
 
 class HomeStore extends BaseStore<HomeState> {
   final DownloaderService _service;
@@ -38,24 +34,6 @@ class HomeStore extends BaseStore<HomeState> {
         emit(state.videoFound(info));
       },
     );
-  }
-
-  void download() async {
-    emit(state.downloading());
-
-    late final Either<Failure, String> response;
-
-    if (state.downloadAudio)
-      response = await _service.downloadAudio(state.info!.url);
-    if (state.downloadVideo)
-      response = await _service.downloadVideo(state.info!.url);
-
-    emit(state.done());
-
-    if (response.isLeft()) return emit(state.alertUser(CouldntDownloadAlert()));
-
-    _reset();
-    OpenFilex.open(response.value);
   }
 
   void toggleDownloadAudio() {

@@ -24,25 +24,12 @@ class DownloaderService {
     }
   }
 
-  AsyncResult<String> downloadVideo(String url) async {
-    try {
-      var result =
-          await _channel.invokeMethod<String>('download', {'url': url});
-      if (result == null) return left(UnknownFailure());
-      return right(result);
-    } catch (e) {
-      return left(UnknownFailure());
-    }
-  }
-
-  AsyncResult<String> downloadAudio(String url) async {
-    try {
-      var result =
-          await _channel.invokeMethod<String>('downloadAudio', {'url': url});
-      if (result == null) return left(UnknownFailure());
-      return right(result);
-    } catch (e) {
-      return left(UnknownFailure());
-    }
+  Stream<dynamic> download(String url, DownloadType type) {
+    return EventChannel('downloader_events').receiveBroadcastStream({
+      'url': url,
+      'onlyAudio': type == DownloadType.audio
+    }).map((event) => event);
   }
 }
+
+enum DownloadType { audio, video }

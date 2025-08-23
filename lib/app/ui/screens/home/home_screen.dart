@@ -4,6 +4,8 @@ import 'package:flutter_ytdlp/app/core/utils/utils.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/alerts/couldnt_download_alert.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/alerts/media_not_found_alert.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/downloader_state.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/downloader_store.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/home_store.dart';
 import 'package:flutter_ytdlp/app/ui/styles/colors.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/animated_entry.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_ytdlp/app/ui/widgets/app_button.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/app_switch.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/input_text.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/video_info_card.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -18,9 +21,18 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider<HomeStore>(
-      create: (context) => HomeStore(context.read<DownloaderService>()),
-      dispose: (_, store) => store.dispose(),
+    return MultiProvider(
+      providers: [
+        Provider<HomeStore>(
+          create: (context) => HomeStore(context.read<DownloaderService>()),
+          dispose: (_, store) => store.dispose(),
+        ),
+        Provider<DownloaderStore>(
+          create: (context) =>
+              DownloaderStore(context.read<DownloaderService>()),
+          dispose: (_, store) => store.dispose(),
+        ),
+      ],
       child: _HomePage(),
     );
   }
@@ -44,6 +56,7 @@ class _HomeState extends State<_HomePage> {
   }
 
   HomeStore get store => context.read<HomeStore>();
+  DownloaderStore get downloaderStore => context.read<DownloaderStore>();
 
   @override
   Widget build(BuildContext context) {
@@ -99,38 +112,61 @@ class _HomeState extends State<_HomePage> {
   }
 
   Widget buildVideoContent() {
-    return AbsorbPointer(
-      absorbing: store.state.isDownloading,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          VideoInfoCard(info: store.state.info!),
-          SizedBox(height: 30),
-          AppSwitch(
-            onChanged: (_) => store.toggleDownloadAudio(),
-            enabled: store.state.downloadAudio,
-            label: 'Áudio',
-          ),
-          SizedBox(height: 18),
-          AppSwitch(
-            onChanged: (_) => store.toggleDownloadVideo(),
-            enabled: store.state.downloadVideo,
-            label: 'Vídeo',
-          ),
-          SizedBox(height: 18),
-          _AlignToRight(
-            child: AppButton(
-              disabled:
-                  (!store.state.downloadAudio && !store.state.downloadVideo) ||
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        final width = constraints.maxWidth;
+
+        return ValueListenableBuilder(
+          valueListenable: downloaderStore.notifier,
+          builder: (context, state, _) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                VideoInfoCard(info: store.state.info!),
+                SizedBox(height: 30),
+                AnimatedEntry(
+                  isEntered: state.status == DownloaderStatus.initial,
+                  builder: (context) => Column(
+                    children: [
+                      AppSwitch(
+                        onChanged: (_) => store.toggleDownloadAudio(),
+                        enabled: store.state.downloadAudio,
+                        label: 'Áudio',
+                      ),
+                      SizedBox(height: 18),
+                      AppSwitch(
+                        onChanged: (_) => store.toggleDownloadVideo(),
+                        enabled: store.state.downloadVideo,
+                        label: 'Vídeo',
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 18),
+                LoadingButton(
+                  width: width,
+                  perc: state.percentage,
+                  disabled: (!store.state.downloadAudio &&
+                          !store.state.downloadVideo) ||
                       store.state.isSearching,
-              text: store.state.isDownloading
-                  ? 'Baixando...'
-                  : 'Iniciar Download',
-              onTap: store.download,
-            ),
-          )
-        ],
-      ),
+                  text: 'Iniciar Download',
+                  endText: 'Abrir arquivo',
+                  onTap: () {
+                    if (state.status == DownloaderStatus.initial) {
+                      final type = store.state.downloadAudio
+                          ? DownloadType.audio
+                          : DownloadType.video;
+                      downloaderStore.download(store.state.info!.url, type);
+                    }
+                    if (state.status == DownloaderStatus.done)
+                      OpenFilex.open(state.path!);
+                  },
+                )
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -145,28 +181,5 @@ class _HomeState extends State<_HomePage> {
       );
 
     return null;
-  }
-}
-
-class _AlignToRight extends StatelessWidget {
-  final Widget child;
-
-  const _AlignToRight({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          flex: 1,
-          child: SizedBox(),
-        ),
-        Expanded(
-          flex: 1,
-          child: child,
-        ),
-      ],
-    );
   }
 }
