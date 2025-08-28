@@ -26,18 +26,23 @@ class DownloaderService {
 
   Stream<DownloadChunk> download(String url, DownloadType type) {
     final brackets = RegExp(r'\[.*?\]');
+    double fakePerc = 0;
 
     return EventChannel('downloader_events').receiveBroadcastStream(
         {'url': url, 'onlyAudio': type == DownloadType.audio}).where((e) {
-      return !brackets.hasMatch(e) || _stages.keys.any((s) => e.contains(s));
+      return !brackets.hasMatch(e) || _stages.any((s) => e.contains(s));
     }).map((event) {
       if (brackets.hasMatch(event)) {
-        final stage = _stages.keys.firstWhere((stage) => event.contains(stage));
-        return DownloadChunk(_stages[stage]!);
+        final increment = _stages.any((stage) => event.contains(stage));
+        if (increment) fakePerc += .1;
+        return DownloadChunk(fakePerc);
       }
 
       final perc = double.tryParse(event);
-      if (perc != null) return DownloadChunk(50 + (perc / 100 * .5));
+      if (perc != null) {
+        final real = fakePerc + (perc / 100 * (1 - fakePerc));
+        return DownloadChunk(real);
+      }
 
       return DownloadChunk(1, filePath: event);
     });
@@ -55,10 +60,10 @@ class DownloadChunk {
 
 enum DownloadType { audio, video }
 
-const _stages = {
-  'webpage': .1,
-  'client config': .2,
-  'tv player': .3,
-  'ios player': .4,
-  'm3u8': .5,
-};
+const _stages = [
+  'webpage',
+  'client config',
+  'tv player',
+  'ios player',
+  'm3u8',
+];
