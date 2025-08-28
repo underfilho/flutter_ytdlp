@@ -2,13 +2,18 @@ import yt_dlp
 import json
 import os
 
-def hook(d, callback):
-    if d['status'] == 'downloading':
-        if(callback):
-            callback(d['_percent_str'])
-    elif d['status'] == 'finished':
-        if(callback):
-            callback("100%")
+class ProgressLogger:
+    def __init__(self, callback):
+        self.callback = callback
+
+    def debug(self, msg):
+        self.callback(msg)
+
+    def warning(self, msg):
+        self.callback(msg)
+
+    def error(self, msg):
+        self.callback(msg)
 
 def download(url, only_audio, callback):
     def hook(d):
@@ -26,7 +31,8 @@ def download(url, only_audio, callback):
         "outtmpl": "/storage/emulated/0/Download/%(title)s.%(ext)s",
         "format": format,
         "noplaylist": True,
-        "progress_hooks": [hook]
+        "progress_hooks": [hook],
+        "logger": ProgressLogger(callback)
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)

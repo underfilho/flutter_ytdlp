@@ -65,6 +65,12 @@ class _LoadingButtonState extends State<LoadingButton>
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (widget.perc >= 1) controller.reverse();
     return GestureDetector(
@@ -88,13 +94,16 @@ class _LoadingButtonState extends State<LoadingButton>
                 children: [
                   LayoutBuilder(builder: (context, constraints) {
                     final width = constraints.maxWidth;
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                    return SizedBox(
                       height: heightAnimation.value,
-                      width: width * widget.perc,
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        width: width * widget.perc,
+                      ),
                     );
                   }),
                   Center(

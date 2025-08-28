@@ -6,7 +6,7 @@ import 'package:flutter_ytdlp/app/models/video_info.dart';
 import 'package:flutter_ytdlp/app/services/debouncer.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/alerts/media_not_found_alert.dart';
-import 'package:flutter_ytdlp/app/ui/screens/home/home_state.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/store/home_state.dart';
 
 class HomeStore extends BaseStore<HomeState> {
   final DownloaderService _service;
@@ -16,7 +16,6 @@ class HomeStore extends BaseStore<HomeState> {
   late final FocusNode urlFocus;
 
   void onFieldChanged(String url) {
-    if (url.isEmpty) return _reset();
     if (!isValidUrl(url)) return;
 
     _debouncer.run(
@@ -25,7 +24,7 @@ class HomeStore extends BaseStore<HomeState> {
         final response = await _service.getVideoInfo(url);
         if (response.isRight()) return response.value;
 
-        _reset();
+        reset();
         emit(state.alertUser(MediaNotFoundAlert()));
         return null;
       },
@@ -48,5 +47,5 @@ class HomeStore extends BaseStore<HomeState> {
     emit(state.toggleSwitch(downloadAudio, downloadVideo));
   }
 
-  void _reset() => emit(HomeState.initial());
+  void reset() => emit(HomeState.initial());
 }

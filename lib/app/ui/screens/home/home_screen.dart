@@ -4,9 +4,9 @@ import 'package:flutter_ytdlp/app/core/utils/utils.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/alerts/couldnt_download_alert.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/alerts/media_not_found_alert.dart';
-import 'package:flutter_ytdlp/app/ui/screens/home/downloader_state.dart';
-import 'package:flutter_ytdlp/app/ui/screens/home/downloader_store.dart';
-import 'package:flutter_ytdlp/app/ui/screens/home/home_store.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/store/downloader_state.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/store/downloader_store.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/store/home_store.dart';
 import 'package:flutter_ytdlp/app/ui/styles/colors.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/animated_entry.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/app_button.dart';
@@ -80,7 +80,15 @@ class _HomeState extends State<_HomePage> {
                       focusNode: urlFocus,
                       hint: 'Insira o link do vídeo',
                       rightIcon: urlFieldIcon,
-                      onChanged: store.onFieldChanged,
+                      onChanged: (s) {
+                        if (s.isEmpty) {
+                          store.reset();
+                          downloaderStore.reset();
+                          return;
+                        }
+
+                        store.onFieldChanged(s);
+                      },
                     ),
                     SizedBox(
                       height: 20,
@@ -122,7 +130,8 @@ class _HomeState extends State<_HomePage> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                VideoInfoCard(info: store.state.info!),
+                if (store.state.info != null)
+                  VideoInfoCard(info: store.state.info!),
                 SizedBox(height: 30),
                 AnimatedEntry(
                   isEntered: state.status == DownloaderStatus.initial,
@@ -151,16 +160,7 @@ class _HomeState extends State<_HomePage> {
                       store.state.isSearching,
                   text: 'Iniciar Download',
                   endText: 'Abrir arquivo',
-                  onTap: () {
-                    if (state.status == DownloaderStatus.initial) {
-                      final type = store.state.downloadAudio
-                          ? DownloadType.audio
-                          : DownloadType.video;
-                      downloaderStore.download(store.state.info!.url, type);
-                    }
-                    if (state.status == DownloaderStatus.done)
-                      OpenFilex.open(state.path!);
-                  },
+                  onTap: () => onDownloadTap(state),
                 )
               ],
             );
@@ -181,5 +181,18 @@ class _HomeState extends State<_HomePage> {
       );
 
     return null;
+  }
+
+  void onDownloadTap(DownloaderState state) async {
+    if (state.status == DownloaderStatus.initial) {
+      final type =
+          store.state.downloadAudio ? DownloadType.audio : DownloadType.video;
+      downloaderStore.download(store.state.info!.url, type);
+    }
+    if (state.status == DownloaderStatus.done) {
+      await OpenFilex.open(state.path!);
+      store.reset();
+      downloaderStore.reset();
+    }
   }
 }

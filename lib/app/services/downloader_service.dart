@@ -24,12 +24,41 @@ class DownloaderService {
     }
   }
 
-  Stream<dynamic> download(String url, DownloadType type) {
-    return EventChannel('downloader_events').receiveBroadcastStream({
-      'url': url,
-      'onlyAudio': type == DownloadType.audio
-    }).map((event) => event);
+  Stream<DownloadChunk> download(String url, DownloadType type) {
+    final brackets = RegExp(r'\[.*?\]');
+
+    return EventChannel('downloader_events').receiveBroadcastStream(
+        {'url': url, 'onlyAudio': type == DownloadType.audio}).where((e) {
+      return !brackets.hasMatch(e) || _stages.keys.any((s) => e.contains(s));
+    }).map((event) {
+      if (brackets.hasMatch(event)) {
+        final stage = _stages.keys.firstWhere((stage) => event.contains(stage));
+        return DownloadChunk(_stages[stage]!);
+      }
+
+      final perc = double.tryParse(event);
+      if (perc != null) return DownloadChunk(50 + (perc / 100 * .5));
+
+      return DownloadChunk(1, filePath: event);
+    });
   }
 }
 
+class DownloadChunk {
+  final double percentage;
+  final String? filePath;
+
+  DownloadChunk(this.percentage, {this.filePath});
+
+  bool get isComplete => filePath != null;
+}
+
 enum DownloadType { audio, video }
+
+const _stages = {
+  'webpage': .1,
+  'client config': .2,
+  'tv player': .3,
+  'ios player': .4,
+  'm3u8': .5,
+};

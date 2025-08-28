@@ -10,7 +10,7 @@ class DownloaderState {
         percentage = null,
         path = null;
 
-  DownloaderState.percentage(this.percentage)
+  DownloaderState.downloading(this.percentage)
       : status = DownloaderStatus.downloading,
         path = null;
 
