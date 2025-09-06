@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ytdlp/app/core/base/alerts.dart';
+import 'package:flutter_ytdlp/app/core/base/base_store.dart';
 import 'package:flutter_ytdlp/app/core/utils/utils.dart';
 import 'package:flutter_ytdlp/app/services/downloader_service.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/alerts/couldnt_download_alert.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/alerts/media_not_found_alert.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/store/downloader_state.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/store/downloader_store.dart';
+import 'package:flutter_ytdlp/app/ui/screens/home/store/home_state.dart';
 import 'package:flutter_ytdlp/app/ui/screens/home/store/home_store.dart';
 import 'package:flutter_ytdlp/app/ui/styles/colors.dart';
 import 'package:flutter_ytdlp/app/ui/widgets/animated_entry.dart';
@@ -23,14 +25,12 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<HomeStore>(
+        StoreProvider<HomeStore>(
           create: (context) => HomeStore(context.read<DownloaderService>()),
-          dispose: (_, store) => store.dispose(),
         ),
-        Provider<DownloaderStore>(
+        StoreProvider<DownloaderStore>(
           create: (context) =>
               DownloaderStore(context.read<DownloaderService>()),
-          dispose: (_, store) => store.dispose(),
         ),
       ],
       child: _HomePage(),
@@ -66,12 +66,12 @@ class _HomeState extends State<_HomePage> {
         child: Center(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            child: ValueListenableBuilder(
-              valueListenable: store.notifier,
-              builder: (context, state, _) {
+            child: ConsumerBuilder<HomeStore, HomeState>(
+              consumer: (state) {
                 if (state.isInitial) controller.text = '';
                 if (state.alert != null) alertHandler(state.alert!);
-
+              },
+              builder: (context, state) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -108,14 +108,12 @@ class _HomeState extends State<_HomePage> {
   }
 
   void alertHandler(Alert alert) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      alert.action(() {
-        if (alert is MediaNotFoundAlert)
-          return showSnackbar(
-              context, 'Não foi encontrado vídeo correspondente.');
-        if (alert is CouldntDownloadAlert)
-          return showSnackbar(context, 'Não foi possível realizar o download.');
-      });
+    alert.action(() {
+      if (alert is MediaNotFoundAlert)
+        return showSnackbar(
+            context, 'Não foi encontrado vídeo correspondente.');
+      if (alert is CouldntDownloadAlert)
+        return showSnackbar(context, 'Não foi possível realizar o download.');
     });
   }
 
@@ -160,7 +158,7 @@ class _HomeState extends State<_HomePage> {
                       store.state.isSearching,
                   text: 'Iniciar Download',
                   endText: 'Abrir arquivo',
-                  onTap: () => onDownloadTap(state),
+                  onTap: () => onButtonTap(state),
                 )
               ],
             );
@@ -183,7 +181,7 @@ class _HomeState extends State<_HomePage> {
     return null;
   }
 
-  void onDownloadTap(DownloaderState state) async {
+  void onButtonTap(DownloaderState state) async {
     if (state.status == DownloaderStatus.initial) {
       final type =
           store.state.downloadAudio ? DownloadType.audio : DownloadType.video;
