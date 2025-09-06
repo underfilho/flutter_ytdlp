@@ -1,4 +1,4 @@
-import 'package:flutter_ytdlp/app/core/base/alerts.dart';
+import 'alerts.dart';
 
 abstract class Failure extends Alert {}
 

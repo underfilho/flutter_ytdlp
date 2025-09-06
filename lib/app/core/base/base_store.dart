@@ -2,19 +2,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-abstract class BaseStore<T> {
-  final ValueNotifier<T> notifier;
+abstract class BaseStore<V> {
+  final ValueNotifier<V> notifier;
 
-  BaseStore(T initialState) : notifier = ValueNotifier<T>(initialState);
+  BaseStore(V initialState) : notifier = ValueNotifier<V>(initialState);
 
-  T get state => notifier.value;
+  V get state => notifier.value;
 
-  void emit(T newState) => notifier.value = newState;
+  void emit(V newState) => notifier.value = newState;
 
   void dispose() => notifier.dispose();
 }
 
-class StoreProvider<T extends BaseStore> extends Provider<T> {
+class StoreProvider<S extends BaseStore> extends Provider<S> {
   StoreProvider({
     super.key,
     required super.create,
